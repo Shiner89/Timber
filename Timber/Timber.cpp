@@ -1,6 +1,7 @@
 // Include important C++ libraries here
 #include "stdafx.h"
 #include <sstream>
+
 //this adds the graphics library 
 #include <SFML/Graphics.hpp>
 
@@ -10,7 +11,7 @@ using namespace sf;
 int main()
 {
 	// Create a video mode object
-	VideoMode vm(1980, 1200);
+	VideoMode vm(1980, 1080);
 
 	// Create and open a window for the game
 	RenderWindow window(vm, "Timber!!!", Style::Fullscreen);
@@ -76,6 +77,18 @@ int main()
 	//variables to control time itself
 	Clock clock;
 
+	// Time bar
+	RectangleShape timeBar;
+	float timeBarStartWidth = 400;
+	float timeBarHeight = 80;
+	timeBar.setSize(Vector2f(timeBarStartWidth, timeBarHeight));
+	timeBar.setFillColor(Color::Red);
+	timeBar.setPosition((1920 / 2) - timeBarStartWidth / 2, 980);
+
+	Time gameTimeTotal;
+	float timeRemaining = 6.0f;
+	float timeBarWidthPerSecond = timeBarStartWidth / timeRemaining;
+
 	// track wether the game is running
 	bool paused = true;
 
@@ -86,7 +99,7 @@ int main()
 
 	// we need to choose a font
 	Font font;
-	font.loadFromFile("fonts/KOMIKAP_.tff");
+	font.loadFromFile("fonts/KOMIKAP.ttf");
 
 	// set the font to our message
 	messageText.setFont(font);
@@ -116,6 +129,7 @@ int main()
 	while (window.isOpen())
 	{
 
+		score++;
 		/*
 		****************************************
 		Handle the players input
@@ -131,6 +145,11 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Return))
 		{
 			paused = false;
+			
+			// Reset the time and the score
+			score = 0;
+			timeRemaining = 5;
+		
 		}
 
 		/*
@@ -144,6 +163,12 @@ int main()
 
 			//measure time
 			Time dt = clock.restart();
+
+			// Subtract from the amout of time remaining
+			timeRemaining -= dt.asSeconds();
+			// size up the time bar
+			timeBar.setSize(Vector2f(timeBarWidthPerSecond * 
+				timeRemaining, timeBarHeight));
 
 			//setup the bee
 			if (!beeActive)
@@ -307,6 +332,7 @@ int main()
 
 
 	}
+	
 
 	return 0;
 }
